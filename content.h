@@ -1,3 +1,6 @@
 #pragma once
 
-void render();
+#include "data.h"
+
+void testTriangle();
+void renderContent();

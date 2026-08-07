@@ -45,21 +45,19 @@ namespace MeshData {
     };
 
     namespace Internal {
-        std::unordered_map<Type, Data> createDataMap() {
+        inline std::unordered_map<Type, Data> createDataMap() {
             std::unordered_map<Type, Data> map;
 
             // Triangle
             map.emplace(Type::TRIANGLE, Data{
                 {
-                    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-                    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                    0.0f,  0.5f, 0.0f, 0.5f, 1.0f 
-                },
-                {
-                    0, 1, 2
-                },
-                glm::vec2(-0.5, -0.5f),
-                glm::vec2(0.5f, 0.5f)
+        -0.9f, -0.9f, 0.0f, 0.0f, 0.0f,  // Bottom-left
+         0.9f, -0.9f, 0.0f, 1.0f, 0.0f,  // Bottom-right
+         0.0f,  0.9f, 0.0f, 0.5f, 1.0f   // Top-center
+    },
+    {0, 1, 2},
+    glm::vec3(-0.9f, -0.9f, 0.0f),
+    glm::vec3(0.9f, 0.9f, 0.0f) 
             });
             // Cube
             map.emplace(Type::SQUARE, Data{
@@ -73,8 +71,8 @@ namespace MeshData {
                     0, 1, 2, 
                     0, 2, 3
                 },
-                glm::vec2(-0.5f, -0.5f),
-                glm::vec2(0.5f, 0.5f)
+                glm::vec3(-0.5f, -0.5f, 0.0f),
+                glm::vec3(0.5f, 0.5f, 0.0f) 
             });
             // Quad
             map.emplace(Type::QUAD, Data{
@@ -88,29 +86,49 @@ namespace MeshData {
                     0, 1, 2, 
                     0, 2, 3,
                 },
-                glm::vec2(-0.8f, -0.4f),
-                glm::vec2(0.8f, 0.4f)
+                glm::vec3(-0.8f, -0.4f, 0.0f),
+                glm::vec3(0.8f, 0.4f, 0.0f)
             });
 
             return map;
         }
     }
 
-    const Data& getMeshData(Type t) {
+    inline const Data& getData(Type t) {
         static const std::unordered_map<Type, Data> map = Internal::createDataMap();
-        
-        MeshData& val = map.at(t);
-        return val;
+        return map.at(t);
     }
 }
 
 namespace Mesh {
-    unsigned int vao = 0;;
-    unsigned int vbo = 0;
-    unsigned int ebo = 0;
-    unsigned int indexCount = 0;
+    static unsigned int vao = 0;
+    static unsigned int vbo = 0;
+    static unsigned int ebo = 0;
+    static unsigned int indexCount = 0;
+
+    static unsigned int shaderProgram = 0;
+    static bool shaderInitialized = false;
+
+    inline void init() {
+        if(!shaderInitialized) {
+            shaderProgram = initShaders();
+            shaderInitialized = true;
+        }
+    }
+    
+    inline void destroy() {
+        glDeleteVertexArrays(1, &vao);
+        glDeleteBuffers(1, &vbo);
+        glDeleteBuffers(1, &ebo);
+
+        vao = 0;
+        vbo = 0;
+        ebo = 0;
+        indexCount = 0;
+    }
 
     inline unsigned int create(const MeshData::Data& data) {
+        init();
         destroy();
 
         indexCount = data.indices.size();
@@ -120,34 +138,42 @@ namespace Mesh {
         glGenBuffers(1, &ebo);
 
         glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(float), data.vertices.data(), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(GLuint), data.indices.data(), GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, 5 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
+        glBindVertexArray(0);
+
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::cout << "OPENGL ERROR: " << err << std::endl;
+        } else {
+            std::cout << "No OpenGL errors" << std::endl;
+        }
+
+        std::cout << "Mesh created! VAO: " << vao << ", Indices: " << indexCount << ", Shader: " << shaderProgram << std::endl;
+
         return indexCount;
     }
 
-    inline void draw() {
+    inline void render() {
+        if(vao == 0 || indexCount == 0) {
+            std::cerr << "Cannot render: VAO or indexCount is 0!" << std::endl;
+            return;
+        }
+
+        glUseProgram(shaderProgram);
+
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-
-    inline void destroy() [
-        glDeleteVertexArrays(1, &vao);
-        glDeleteBuffers(1, &vbo);
-        glDeleteBuffers(1, &ebo);
-
-        vao = 0;
-        vbo = 0;
-        ebo = 0;
-        indexCount = 0;
-    ]
 }

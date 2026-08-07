@@ -1,13 +1,19 @@
 #include "main.h"
 
 void render(GLFWwindow* window) {
+    glDisable(GL_DEPTH_TEST);
+    
     while(!glfwWindowShouldClose(window)) {
         glClearColor(0.3f, 0.5f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        renderContent();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glfwTerminate(); 
 }
 
 void setWindow() {
@@ -30,8 +36,6 @@ void setWindow() {
 
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    initShaders();
-    
     render(win);
 }
 
@@ -46,8 +50,6 @@ void init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     setWindow();
-
-    glfwTerminate(); 
 }
 
 int main() {

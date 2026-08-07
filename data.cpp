@@ -68,14 +68,14 @@ unsigned createShaderProgram(const std::string& vertexPath, const std::string& f
     return shaderProgram;
 }
 
-void initShaders() {
+unsigned int initShaders() {
     std::string vertex = "vert.glsl";
     std::string frag = "frag.glsl";
 
     unsigned int shaderProgram = createShaderProgram(vertex, frag);
     if(shaderProgram == 0) {
         std::cerr << "Failed to create shader program!" << std::endl;
-        return;
+        return 0;
     }
 
     std::cout << "Shader prorgam created! ID: " << shaderProgram << std::endl;
