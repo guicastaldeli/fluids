@@ -60,45 +60,45 @@ namespace MeshData {
             // Triangle
             map.emplace(Type::TRIANGLE, Data{
                 {
-                    -0.9f, -0.9f, 0.0f, 0.0f, 0.0f,
-                    0.9f, -0.9f, 0.0f, 1.0f, 0.0f,
-                    0.0f,  0.9f, 0.0f, 0.5f, 1.0f
+                    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                    0.0f,  0.5f, 0.0f, 0.5f, 1.0f
                 },
-                {
-                    0, 1, 2
+                { 
+                    0, 1, 2 
                 },
-                glm::vec3(-0.9f, -0.9f, 0.0f),
-                glm::vec3(0.9f, 0.9f, 0.0f) 
+                glm::vec3(-0.5f, -0.5f, 0.0f),
+                glm::vec3(0.5f, 0.5f, 0.0f)
             });
-            // Cube
+            // Square
             map.emplace(Type::SQUARE, Data{
                 {
                     -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
                     0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
                     0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-                    -0.5f,  0.5f, 0.0f, 0.0f, 1.0f 
+                    -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
                 },
-                {
+                { 
                     0, 1, 2, 
-                    0, 2, 3
+                    0, 2, 3 
                 },
                 glm::vec3(-0.5f, -0.5f, 0.0f),
-                glm::vec3(0.5f, 0.5f, 0.0f) 
+                glm::vec3(0.5f, 0.5f, 0.0f)
             });
             // Quad
             map.emplace(Type::QUAD, Data{
                 {
-                    -0.8f, -0.4f, 0.0f, 0.0f, 0.0f,
-                    0.8f, -0.4f, 0.0f, 1.0f, 0.0f,
-                    0.8f,  0.4f, 0.0f, 1.0f, 1.0f,
-                    -0.8f,  0.4f, 0.0f, 0.0f, 1.0f 
+                    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                    0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+                    -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
                 },
-                {
+                { 
                     0, 1, 2, 
-                    0, 2, 3,
+                    0, 2, 3 
                 },
-                glm::vec3(-0.8f, -0.4f, 0.0f),
-                glm::vec3(0.8f, 0.4f, 0.0f)
+                glm::vec3(-0.5f, -0.5f, 0.0f),
+                glm::vec3(0.5f, 0.5f, 0.0f)
             });
 
             return map;
@@ -112,13 +112,18 @@ namespace MeshData {
 }
 
 namespace Mesh {
+    struct Buffer {
+        unsigned int vao = 0;
+        unsigned int vbo = 0;
+        unsigned int ebo = 0;
+        unsigned int indexCount = 0;
+    };
+
     inline unsigned int shaderProgram = 0;
     inline bool shaderInitialized = false;
 
-    inline unsigned int vao = 0;
-    inline unsigned int vbo = 0;
-    inline unsigned int ebo = 0;
-    inline unsigned int indexCount = 0;
+    inline std::unordered_map<const MeshData::Data*, Buffer> buffers;
+    inline Buffer* current = nullptr;
 
     inline int modelLoc = -1; 
     inline int viewLoc = -1;

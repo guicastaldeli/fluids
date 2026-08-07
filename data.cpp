@@ -98,53 +98,49 @@ unsigned int initShaders() {
  */
 // Create Mesh
 unsigned int Mesh::createMesh(const MeshData::Data& data) {
-    initMesh();
-    //destroyMesh();
+    if(!buffers.count(&data)) {
+        initMesh();
 
-    indexCount = data.indices.size();
+        Buffer buffer;
+        buffer.indexCount = data.indices.size();
 
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(float), data.vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(GLuint), data.indices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glUseProgram(shaderProgram);
-
-    modelLoc = glGetUniformLocation(shaderProgram, "model");
-    viewLoc = glGetUniformLocation(shaderProgram, "view");
-    projLoc = glGetUniformLocation(shaderProgram, "projection");
-
-    colorLoc = glGetUniformLocation(shaderProgram, "color");
-
-    glBindVertexArray(0);
-
-    GLenum err = glGetError();
-    if(err != GL_NO_ERROR) {
-        std::cout << "OPENGL ERROR: " << err << std::endl;
-    } else {
-        std::cout << "No OpenGL errors" << std::endl;
+        glGenVertexArrays(1, &buffer.vao);
+        glGenBuffers(1, &buffer.vbo);
+        glGenBuffers(1, &buffer.ebo);
+    
+        glBindVertexArray(buffer.vao);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer.vbo);
+        glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(float), data.vertices.data(), GL_STATIC_DRAW);
+    
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(GLuint), data.indices.data(), GL_STATIC_DRAW);
+    
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+    
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    
+        glBindVertexArray(0);
+        buffers[&data] = buffer;
+    
+        GLenum err = glGetError();
+        if(err != GL_NO_ERROR) {
+            std::cout << "OPENGL ERROR: " << err << std::endl;
+        } else {
+            std::cout << "No OpenGL errors" << std::endl;
+        }
+    
+        std::cout << "Mesh created! VAO: " << buffer.vao << ", Indices: " << buffer.indexCount << ", Shader: " << shaderProgram << std::endl;
     }
 
-    std::cout << "Mesh created! VAO: " << vao << ", Indices: " << indexCount << ", Shader: " << shaderProgram << std::endl;
-
-    return indexCount;
+    current = &buffers[&data];
+    return current->indexCount;
 }
 
 // Render Mesh
 void Mesh::renderMesh() {
-    if(vao == 0 || indexCount == 0) {
+    if(!current || current->vao == 0 || current->indexCount == 0) {
         std::cerr << "Cannot render: VAO or indexCount is 0!" << std::endl;
         return;
     }
@@ -157,8 +153,8 @@ void Mesh::renderMesh() {
 
     if(colorLoc != -1) glUniform3fv(colorLoc, 1, &color[0]);
     
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(current->vao);
+    glDrawElements(GL_TRIANGLES, current->indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
@@ -166,18 +162,24 @@ void Mesh::renderMesh() {
 void Mesh::initMesh() {
     if(!shaderInitialized) {
         shaderProgram = initShaders();
+
+        glUseProgram(shaderProgram);
+        modelLoc = glGetUniformLocation(shaderProgram, "model");
+        viewLoc  = glGetUniformLocation(shaderProgram, "view");
+        projLoc  = glGetUniformLocation(shaderProgram, "projection");
+        colorLoc = glGetUniformLocation(shaderProgram, "color");
+
         shaderInitialized = true;
     }
 }
 
 // Destroy Mesh
 void Mesh::destroyMesh() {
-    glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
-
-    vao = 0;
-    vbo = 0;
-    ebo = 0;
-    indexCount = 0;
+    for(auto& [data, buffer] : buffers) {
+        glDeleteVertexArrays(1, &buffer.vao);
+        glDeleteBuffers(1, &buffer.vbo);
+        glDeleteBuffers(1, &buffer.ebo);
+    }
+    
+    buffers.clear();
 }

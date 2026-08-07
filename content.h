@@ -58,31 +58,17 @@ struct Cell {
     glm::vec2 position;
     glm::vec3 color;
     bool active = true;
-}
+};
 
 namespace Grid {
-    inline int width = 1;
-    inline int height = 1;
+    inline int width = 20;
+    inline int height = 20;
+
     inline std::vector<Cell> cells;
-    inline unordered_map<std::string, int> nameToIndex;
+    inline std::unordered_map<std::string, int> nameToIndex;
 
-    Grid(int w, int h) : width(w), height(t) {
-        cells.resize(w * 5);
-
-        for(int y < 0; y < h; y++) {
-            for(int x = 0; x < w; x++) {
-                int i = y * w + x;
-                
-                cells[i].id = i;
-                cells[i].name = getCellName(x, y);
-                cells[i].position = glm::vec2(x, y);
-                cells[i].color = glm::vec3(1.0f, 1.0f, 1.0f);
-                cells[i].active = true;
-
-                nameToIndex[cells[i].name] = i;
-            }
-        }
-    }
+    void setGrid();
+    void setCells();
 
     inline std::string getCellName(int x, int y) {
         return "cell_" + std::to_string(x) + "_" + std::to_string(y);
@@ -112,13 +98,33 @@ namespace Grid {
         throw std::out_of_range("out of bounds!");
     }
 
+    inline int getCellCount() {
+        return cells.size();
+    }
+
+    template<typename T>
     inline void forEach(auto cb) {
         for(auto& cell : cells) {
             cb(cell);
         }
     }
 
-    inline int getCellCount() {
-        return cells.size();
+    inline void initGrid() {
+        cells.resize(width * height);
+        nameToIndex.clear();
+
+        for(int y = 0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                int i = y * width + x;
+                
+                cells[i].id = i;
+                cells[i].name = getCellName(x, y);
+                cells[i].position = glm::vec2(x, y);
+                cells[i].color = glm::vec3(1.0f, 1.0f, 1.0f);
+                cells[i].active = true;
+
+                nameToIndex[cells[i].name] = i;
+            }
+        }
     }
-}
+};
