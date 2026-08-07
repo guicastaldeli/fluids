@@ -17,6 +17,8 @@ void render(GLFWwindow* window) {
 }
 
 void setWindow() {
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    
     GLFWwindow* win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "window", NULL, NULL);
     if(win == NULL) {
         std::cout << "Window failed" << std::endl;
