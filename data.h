@@ -10,14 +10,23 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp> 
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
-// Shaders
+/**
+ * 
+ * Shader
+ *  
+ * */  
 std::string readShaderFile(const std::string& filepath);
 unsigned int compileShader(const std::string& source, GLenum shaderType);
 unsigned int createShaderProgram(const std::string& vertexPath, const std::string& fragPath);
 unsigned int initShaders();
 
-// Mesh
+/**
+ * 
+ * Mesh
+ *  
+ * */  
 namespace MeshData {
     enum class Type {
         TRIANGLE,
@@ -51,13 +60,15 @@ namespace MeshData {
             // Triangle
             map.emplace(Type::TRIANGLE, Data{
                 {
-        -0.9f, -0.9f, 0.0f, 0.0f, 0.0f,  // Bottom-left
-         0.9f, -0.9f, 0.0f, 1.0f, 0.0f,  // Bottom-right
-         0.0f,  0.9f, 0.0f, 0.5f, 1.0f   // Top-center
-    },
-    {0, 1, 2},
-    glm::vec3(-0.9f, -0.9f, 0.0f),
-    glm::vec3(0.9f, 0.9f, 0.0f) 
+                    -0.9f, -0.9f, 0.0f, 0.0f, 0.0f,
+                    0.9f, -0.9f, 0.0f, 1.0f, 0.0f,
+                    0.0f,  0.9f, 0.0f, 0.5f, 1.0f
+                },
+                {
+                    0, 1, 2
+                },
+                glm::vec3(-0.9f, -0.9f, 0.0f),
+                glm::vec3(0.9f, 0.9f, 0.0f) 
             });
             // Cube
             map.emplace(Type::SQUARE, Data{
@@ -101,79 +112,42 @@ namespace MeshData {
 }
 
 namespace Mesh {
+    static unsigned int shaderProgram = 0;
+    static bool shaderInitialized = false;
+    
     static unsigned int vao = 0;
     static unsigned int vbo = 0;
     static unsigned int ebo = 0;
     static unsigned int indexCount = 0;
 
-    static unsigned int shaderProgram = 0;
-    static bool shaderInitialized = false;
+    static int modelLoc = -1;
+    static int viewLoc = -1;
+    static int projLoc = -1;
 
-    inline void init() {
-        if(!shaderInitialized) {
-            shaderProgram = initShaders();
-            shaderInitialized = true;
-        }
-    }
-    
-    inline void destroy() {
-        glDeleteVertexArrays(1, &vao);
-        glDeleteBuffers(1, &vbo);
-        glDeleteBuffers(1, &ebo);
+    static glm::mat4 modelMatrix = glm::mat4(1.0f);
+    static glm::mat4 viewMatrix = glm::mat4(1.0f);
+    static glm::mat4 projMatrix = glm::mat4(1.0f);
 
-        vao = 0;
-        vbo = 0;
-        ebo = 0;
-        indexCount = 0;
-    }
+    unsigned int createMesh(const MeshData::Data& data);
+    void renderMesh();
+    void initMesh();
+    void destroyMesh();
 
-    inline unsigned int create(const MeshData::Data& data) {
-        init();
-        destroy();
+    inline void setModelMatrix(const glm::mat4& m) { modelMatrix = m; }
+    inline void setViewMatrix(const glm::mat4& m) { viewMatrix = m; }
+    inline void setProjectionMatrix(const glm::mat4& m) { projMatrix = m; }
 
-        indexCount = data.indices.size();
-
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        glGenBuffers(1, &ebo);
-
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, data.vertices.size() * sizeof(float), data.vertices.data(), GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(GLuint), data.indices.data(), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-
-        glBindVertexArray(0);
-
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::cout << "OPENGL ERROR: " << err << std::endl;
-        } else {
-            std::cout << "No OpenGL errors" << std::endl;
-        }
-
-        std::cout << "Mesh created! VAO: " << vao << ", Indices: " << indexCount << ", Shader: " << shaderProgram << std::endl;
-
-        return indexCount;
+    inline void setScale(float width, float height) {
+        modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(width, height, 1.0f));
     }
 
-    inline void render() {
-        if(vao == 0 || indexCount == 0) {
-            std::cerr << "Cannot render: VAO or indexCount is 0!" << std::endl;
-            return;
-        }
+    inline void setPosition(float x, float y) {
+        modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+    }
 
-        glUseProgram(shaderProgram);
-
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+    inline void setTransform(float x, float y, float width, float height) {
+        modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(x, y, 0.0f));
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(width, height, 1.0f));
     }
 }
