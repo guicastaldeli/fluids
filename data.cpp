@@ -3,8 +3,8 @@
 /**
  * 
  * Shader
- *  
- * */
+ * 
+ */
 // Render Shader File
 std::string readShaderFile(const std::string& filepath) {
     std::ifstream file(filepath);
@@ -94,12 +94,12 @@ unsigned int initShaders() {
 /**
  * 
  * Mesh
- *  
- * */  
+ * 
+ */
 // Create Mesh
 unsigned int Mesh::createMesh(const MeshData::Data& data) {
     initMesh();
-    destroyMesh();
+    //destroyMesh();
 
     indexCount = data.indices.size();
 
@@ -119,6 +119,8 @@ unsigned int Mesh::createMesh(const MeshData::Data& data) {
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glUseProgram(shaderProgram);
 
     modelLoc = glGetUniformLocation(shaderProgram, "model");
     viewLoc = glGetUniformLocation(shaderProgram, "view");
