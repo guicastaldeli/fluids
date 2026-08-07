@@ -16,8 +16,10 @@ void Camera::setCamera() {
 
 void setBackground() {
     const auto& data = MeshData::getData(MeshData::Type::SQUARE);
+    
     Mesh::createMesh(data);
     Mesh::setScale((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT);
+    Mesh::setColor(0.3f, 0.3f, 0.3f);
 }
 
 void renderContent() {

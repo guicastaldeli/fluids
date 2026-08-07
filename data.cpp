@@ -126,6 +126,8 @@ unsigned int Mesh::createMesh(const MeshData::Data& data) {
     viewLoc = glGetUniformLocation(shaderProgram, "view");
     projLoc = glGetUniformLocation(shaderProgram, "projection");
 
+    colorLoc = glGetUniformLocation(shaderProgram, "color");
+
     glBindVertexArray(0);
 
     GLenum err = glGetError();
@@ -153,6 +155,8 @@ void Mesh::renderMesh() {
     if(viewLoc != -1) glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &viewMatrix[0][0]);
     if(projLoc != -1) glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projMatrix[0][0]);
 
+    if(colorLoc != -1) glUniform3fv(colorLoc, 1, &color[0]);
+    
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

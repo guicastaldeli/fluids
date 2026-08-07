@@ -124,19 +124,25 @@ namespace Mesh {
     inline int viewLoc = -1;
     inline int projLoc = -1;
     
+    inline int colorLoc = -1;
+    
     inline glm::mat4 modelMatrix = glm::mat4(1.0f);
     inline glm::mat4 viewMatrix  = glm::mat4(1.0f);
     inline glm::mat4 projMatrix  = glm::mat4(1.0f);
+
+    inline glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     unsigned int createMesh(const MeshData::Data& data);
     void renderMesh();
     void initMesh();
     void destroyMesh();
 
+    // Matrix
     inline void setModelMatrix(const glm::mat4& m) { modelMatrix = m; }
     inline void setViewMatrix(const glm::mat4& m) { viewMatrix = m; }
     inline void setProjectionMatrix(const glm::mat4& m) { projMatrix = m; }
 
+    // Properties
     inline void setScale(float width, float height) {
         modelMatrix = glm::scale(modelMatrix, glm::vec3(width, height, 1.0f));
     }
@@ -157,5 +163,13 @@ namespace Mesh {
         modelMatrix = glm::mat4(1.0f);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(x, y, 0.0f));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(width, height, 1.0f));
+    }
+
+    inline void setColor(float r, float g, float b) {
+        color = glm::vec3(r, g, b);
+    }
+
+    inline void setColor(const glm::vec3& c) {
+        color = c;
     }
 }
