@@ -11,6 +11,8 @@ void render(GLFWwindow* window) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        
+        processInput(window);
     }
 
     glfwTerminate(); 
@@ -38,6 +40,7 @@ void setWindow() {
 
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    initInput(win);
     render(win);
 }
 

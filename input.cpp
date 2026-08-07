@@ -13,9 +13,9 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void initInput(GLFWwindow* window) {
-    glfwSetCursorEnterCallback(window, mouseCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
 }
 
 void processInput(GLFWwindow* window) {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwWindowShouldClose(window, true);
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
 }
