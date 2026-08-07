@@ -27,7 +27,7 @@ void setBackground() {
     
     Mesh::createMesh(data);
     Mesh::setTransform(0.0f, 0.0f, (float)screenWidth, (float)screenHeight);
-    Mesh::setColor(0.3f, 0.3f, 0.3f);
+    Mesh::setColor(0.15f, 0.15f, 0.15f);
     Mesh::renderMesh();
 }
 
@@ -60,7 +60,7 @@ void Grid::setCells() {
             
             Mesh::setTransform(posX, posY, cellSize, cellSize);
             Mesh::setColor(cell.color);
-            Mesh::setScale(0.5f, 0.5f);
+            Mesh::setScale(0.9f, 0.9f);
             Mesh::renderMesh();
         }
     }

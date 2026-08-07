@@ -120,7 +120,7 @@ namespace Grid {
                 cells[i].id = i;
                 cells[i].name = getCellName(x, y);
                 cells[i].position = glm::vec2(x, y);
-                cells[i].color = glm::vec3(1.0f, 1.0f, 1.0f);
+                cells[i].color = glm::vec3(0.3f, 0.3f, 0.3f);
                 cells[i].active = true;
 
                 nameToIndex[cells[i].name] = i;
