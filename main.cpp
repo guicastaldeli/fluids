@@ -44,10 +44,12 @@ void init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     setWindow();
+
+    glfwTerminate(); 
 }
 
 int main() {
     init();
-    glfwTerminate(); 
+
     return 0;
 }
