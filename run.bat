@@ -8,7 +8,7 @@ g++ -std=c++20 ^
     -I"%VCPKG_DIR%\include" ^
     -I"C:/Users/casta/OneDrive/Desktop/glad/include" ^
     -I"C:/Users/casta/OneDrive/Desktop/glm-1.0.2" ^
-    main.cpp ^
+    *.cpp ^
     "C:/Users/casta/OneDrive/Desktop/glad/src/glad.c" ^
     -o main.exe ^
     "%VCPKG_DIR%\lib\glfw3dll.lib" ^

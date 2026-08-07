@@ -1,9 +1,5 @@
 #include "content.h"
 
-void getShaders() {
-    
-}
-
 void render() {
-
+    // Will be renderer here!
 }

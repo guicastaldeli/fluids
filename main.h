@@ -1,5 +1,6 @@
-#define MAIN_H
+#pragma once
 
+#include "data.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>

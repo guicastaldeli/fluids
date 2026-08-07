@@ -1,3 +1,3 @@
-#define CONTENT_H
+#pragma once
 
 void render();

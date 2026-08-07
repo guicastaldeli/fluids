@@ -6,6 +6,16 @@ std::string readShaderFile(const std::string& filepath) {
         std::cerr << "Failed to open shader file: " << filepath << std::endl;
         return "";
     }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    std::cout << "=== " << filepath << " ===" << std::endl;
+    std::cout << content << std::endl;
+    std::cout << "=== End of " << filepath << " ===" << std::endl;
+
+    return content;
 }
 
 unsigned int compileShader(const std::string& source, GLenum shaderType) {
@@ -54,6 +64,21 @@ unsigned createShaderProgram(const std::string& vertexPath, const std::string& f
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragShader);
+
+    return shaderProgram;
+}
+
+void initShaders() {
+    std::string vertex = "vert.glsl";
+    std::string frag = "frag.glsl";
+
+    unsigned int shaderProgram = createShaderProgram(vertex, frag);
+    if(shaderProgram == 0) {
+        std::cerr << "Failed to create shader program!" << std::endl;
+        return;
+    }
+
+    std::cout << "Shader prorgam created! ID: " << shaderProgram << std::endl;
 
     return shaderProgram;
 }

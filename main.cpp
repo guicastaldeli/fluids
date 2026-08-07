@@ -30,6 +30,8 @@ void setWindow() {
 
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    initShaders();
+    
     render(win);
 }
 
