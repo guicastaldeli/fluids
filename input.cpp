@@ -1,21 +1,33 @@
 #include "input.h"
 
-void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-    float cellSize = (float)WINDOW_WIDTH / Grid::width;
+static bool mousePressed = false;
 
-    int x = (int)(xpos / cellSize);
-    int y = (int)((WINDOW_HEIGHT - ypos) / cellSize);
+static void activateMouseEvent(GLFWwindow* window, double xpos, double ypos) {
+    Grid::setGridEvent(xpos, ypos);
+}
 
-    if(x >= 0 && x < Grid::width && y >= 0 && y < Grid::height) {
-        Cell& cell = Grid::getCell(x, y);
-        std::cout << "mouse over " << cell.name << std::endl;
+static void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    if(mousePressed) activateMouseEvent(window, xpos, ypos);
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if(button == GLFW_MOUSE_BUTTON_LEFT) {
+        mousePressed = (action == GLFW_PRESS);
+
+        if(mousePressed) {
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+            activateMouseEvent(window, xpos, ypos);
+        }
     }
 }
 
 void initInput(GLFWwindow* window) {
     glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
 }
 
 void processInput(GLFWwindow* window) {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+    Grid::resetGrid(window); // Reset
 }

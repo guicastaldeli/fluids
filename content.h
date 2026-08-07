@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 #include <map>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp> 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -68,7 +69,11 @@ namespace Grid {
     inline std::unordered_map<std::string, int> nameToIndex;
 
     void setGrid();
+    void setGridEvent(double xpos, double ypos);
+    void resetGrid(GLFWwindow* window);
+
     void setCells();
+    void onCellClicked(int x, int y);
 
     inline std::string getCellName(int x, int y) {
         return "cell_" + std::to_string(x) + "_" + std::to_string(y);

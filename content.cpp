@@ -40,6 +40,26 @@ void Grid::setGrid() {
     initGrid();
 }
 
+void Grid::setGridEvent(double xpos, double ypos) {
+    float cellSize = (float)WINDOW_WIDTH / width;
+
+    int x = (int)(xpos / cellSize);
+    int y = (int)((WINDOW_HEIGHT - ypos) / cellSize);
+
+    if(x >= 0 && x < width && y >= 0 && y < height) {
+        onCellClicked(x, y);
+        //std::cout << "mouse over " << cell.name << std::endl;
+    }
+}
+
+void Grid::resetGrid(GLFWwindow* window) {
+    static bool wasPressed = false;
+    
+    bool isPressed = glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS;
+    if(isPressed && !wasPressed) initGrid();
+    wasPressed = isPressed;
+}
+
 void Grid::setCells() {
     const auto& data = MeshData::getData(MeshData::Type::QUAD);
     Mesh::createMesh(data);
@@ -66,6 +86,16 @@ void Grid::setCells() {
     }
 }
 
+void Grid::onCellClicked(int x, int y) {
+    Cell& cell = Grid::getCell(x, y);
+    cell.active = true;
+    cell.color = glm::vec3(
+        (float)(rand() % 100) / 100.0f,
+        (float)(rand() % 100) / 100.0f,
+        (float)(rand() % 100) / 100.0f
+    );
+}
+
 /**
  * 
  * Render
@@ -74,6 +104,8 @@ void Grid::setCells() {
 void renderContent() {
     if(!initialized) {
         //testTriangle();
+
+        srand((unsigned int)time(nullptr));
 
         camera.setCamera();
 
