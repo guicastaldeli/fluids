@@ -57,7 +57,7 @@ void Grid::setCells() {
 
             float posX = x * cellSize - uWidth + uCellSize;
             float posY = y * cellSize - uHeight + uCellSize;
-            
+
             Mesh::setTransform(posX, posY, cellSize, cellSize);
             Mesh::setColor(cell.color);
             Mesh::setScale(0.9f, 0.9f);

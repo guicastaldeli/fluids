@@ -61,8 +61,8 @@ struct Cell {
 };
 
 namespace Grid {
-    inline int width = 20;
-    inline int height = 20;
+    inline int width = 40;
+    inline int height = 40;
 
     inline std::vector<Cell> cells;
     inline std::unordered_map<std::string, int> nameToIndex;
