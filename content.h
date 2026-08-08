@@ -133,3 +133,13 @@ namespace Grid {
         }
     }
 };
+
+/**
+ * 
+ * Physics
+ * 
+ */
+enum class GravityType {
+    SOLID,
+    MOVE
+};
